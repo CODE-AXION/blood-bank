@@ -12,7 +12,7 @@ Based on the modules and features outlined in the PDF, here is a comprehensive d
 ---
 
 #### **1. `users` Table**
-This table will store general user information and serve as the base for different roles (Admin, Donor, General User).
+This table will store general user information and serve as the base for different roles (Admin, Donor, Patient).
 
 *   **`id`**: `unsignedBigInteger` (Primary Key)
 *   **`name`**: `string` (e.g., 'John Doe' or 'Admin User')
@@ -172,13 +172,13 @@ Records requests for blood, whether by a patient, general user, or clinic.
 
 *   **`id`**: `unsignedBigInteger` (Primary Key)
 *   **`patient_id`**: `unsignedBigInteger` (Nullable, Foreign Key to `patients.id`) - *patient requests.*
-<!-- *   **`requester_user_id`**: `unsignedBigInteger` (Nullable, Foreign Key to `users.id`) - *If a registered user makes the request.* -->
 *   **`blood_group_id`**: `unsignedBigInteger` (Foreign Key to `blood_groups.id`)
 *   **`units_requested`**: `integer`
 *   **`urgency_level`**: `enum` ('routine', 'urgent', 'emergency')
 *   **`request_date`**: `date`
 *   **`required_by_date`**: `date` (Nullable)
 *   **`status`**: `enum` ('pending', 'approved', 'fulfilled', 'rejected', 'canceled')
+*   **`rejection_reason`**: `text` (Nullable) 
 *   **`description`**: `text` (Nullable)
 *   **`created_at`**: `timestamp`
 *   **`updated_at`**: `timestamp`

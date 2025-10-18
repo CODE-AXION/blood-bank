@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\Donor;
 
 class LoginRequest extends FormRequest
 {
@@ -47,6 +48,26 @@ class LoginRequest extends FormRequest
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
+        }
+
+        $user = Auth::user();
+
+        // Check if the user is a donor
+        if ($user->isDonor()) {
+            $donor = Donor::where('user_id', $user->id)->first();
+
+            // Check donor status
+            if ($donor && $donor->status === 'pending_verification') {
+                Auth::logout(); // Log out the user
+                throw ValidationException::withMessages([
+                    'email' => 'Your account is still awaiting verification by our team. Please wait for activation.',
+                ]);
+            } elseif (!$donor) {
+                Auth::logout(); // Log out if no donor record found for a donor role
+                throw ValidationException::withMessages([
+                    'email' => 'Donor record not found. Please contact support.',
+                ]);
+            }
         }
 
         RateLimiter::clear($this->throttleKey());

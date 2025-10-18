@@ -45,6 +45,11 @@ Based on the provided PDF, here are the modules and features you need to build f
         *   Add Blood Group
         *   Update Blood Group
         *   Delete Blood Group
+    *   **Blood Request Management:**
+        * View a list of all blood requests with filtering by status (Pending, Approved, etc.).
+        * View the detailed information of a specific patient request.
+        * Approve pending blood requests.
+        * Reject pending blood requests with an optional reason.
     *   **Content Management:**
         *   Add/Delete Gallery items (images)
         *   Add/Delete News items
@@ -101,12 +106,16 @@ Based on the provided PDF, here are the modules and features you need to build f
     *   **Issue and Payment Information:** Displays details of issued blood components, payments made, and a link to the final bill when the patient's page is accessed.
     *   **Reporting:** Generates reports such as Issue Register, Reserved Units, and Patient Inventory List.
     *   **Transfusion Reaction Data:** Captures data related to transfusion reactions.
+    *   **Patient Panel Access:** A secure panel for registered patients to manage their information and requests.
+    *   **View Request Status:** Patients can view the status (Pending, Approved, Fulfilled, Rejected) of * their submitted blood requests.
+    *   **Submit New Requests:** Allows a logged-in patient to easily submit new blood requests, pre-filling their personal information.
 
 **10. Blood Issue and Billing**
     *   **Payment Adjustments:** Provides options for adjustments in the final payment receipt for blood unit concessions.
     *   **Cross-Match Prevention:** Prevents blood issue if cross-matching is not done or fails.
     *   **Conditional Billing:** Final bills are generated only after payment is accounted for and the selected component has been serology tested and is ready for issue.
     *   **Auto-generated Documents:** Automatically generates final receipts and cross-matching reports.
+    *   **Allocate and Issue Blood:** Admins can search available, tested inventory (blood_units) to allocate and issue blood against an approved patient request.
 
 **11. Search Module**
     *   **Multi-criteria Search:** Allows searching based on Component ID, Donor Registration ID, Donor BloodBag Number, and Donor Name.

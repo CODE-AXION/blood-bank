@@ -29,6 +29,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            return redirect()->intended('/admin');
+        } elseif ($user->isDonor()) {
+            return redirect()->intended('/donor');
+        } elseif ($user->isPatient()) {
+            return redirect()->intended('/patient'); // Assuming a 'patient' panel will be created
+        }
+
         return redirect()->intended(RouteServiceProvider::HOME);
     }
 

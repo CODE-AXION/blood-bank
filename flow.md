@@ -29,7 +29,7 @@ This is the entry point for anyone accessing the website without logging in.
     *   **Features:**
         *   **Request For Blood Page/Registration (7.3):** User fills in their personal details (name, email, contact, blood group needed, units, urgency, required by date) and patient details (if applicable).
         *   **Data Submission:** The request is submitted to the system.
-    *   **System Action Flow:** The request is recorded in the `blood_requests`  table with a 'pending' status, typically with a `patient_id` and it will also store the data in the users table also with the name and email and the role as `patient` and the user.id will be stored in the `patients.user_id` so the patient details will also be filled in the patients table !. and the newly registered patient will be sent password reset mail on his mail id and after loggin in the patient can submit more blood requests if he wants in future ! if he tries to register again with the same id we would throw him an error to log in as a patient
+    *   **System Action Flow:** The request is recorded in the `blood_requests` table with a 'pending' status. A new `user` with the 'patient' role and a corresponding `patients` record are created. An email is sent to the patient with a link to set their password, granting them access to their Patient Panel where they can track the request status. The request now enters the admin review queue.
 
 3.  **Blood Search (Public View - Limited Info):**
     *   A user wants to check general availability of a blood group.
@@ -174,6 +174,10 @@ The Admin has comprehensive control and oversight over all system functionalitie
         *   **View Requests:** Admin reviews all pending blood requests (from `blood_requests` table).
         *   **Approve/Reject Requests:** Change the `status` of a blood request.
         *   **Match Requests:** Identify suitable blood units based on blood group and availability.
+        *   **View Pending Requests:** Admin reviews a dashboard or dedicated page listing all blood requests with a 'pending' status.
+        *   **Approve/Reject Requests:** Admin reviews the details of a request and can either approve it (changing status to 'approved') or reject it (changing status to 'rejected' and adding a reason). The patient is notified via email.
+        *   **Check Inventory & Allocate:** For an approved request, the system helps the admin view available and matching blood units from the inventory (units with status 'ready_for_issue').
+        *   **Issue Blood:** Admin selects a specific blood unit to issue. This action creates a `blood_issue` record, updates the `blood_unit` status to 'issued', and updates the `blood_request` status to 'fulfilled'.
 
 12. **Blood Unit Reservation:**
     *   **Module:** Patient Management System
@@ -203,6 +207,57 @@ The Admin has comprehensive control and oversight over all system functionalitie
         *   **Add/Delete Gallery:** Manage images for the website's gallery (`galleries` table).
         *   **Add/Delete News:** Publish or remove news articles (`news` table).
         *   **Add/Delete Advertisement:** Manage advertisements (`advertisements` table).
+
+---
+
+
+#### **IV. Patient Flow (Post-Registration)**
+
+This flow is for users who have submitted a blood request and now have a patient account.
+
+1.  **Patient Login:**
+    *   A registered patient uses the link from their email to set their password for the first time, then logs in.
+    *   **Module:** Login Module
+    *   **Authentication:** System validates credentials against the `users` table (where `role` = 'patient').
+
+2.  **Patient Panel Access:**
+    *   Upon successful login, the patient is taken to their personal dashboard.
+    *   **Module:** Patient Management System (Patient Panel)
+
+3.  **Request Status Tracking:**
+    *   The primary feature is a page listing all their past and present blood requests.
+    *   They can see the current **status** (e.g., Pending, Approved, Fulfilled, Rejected) of each request in real-time.
+
+4.  **Profile Management:**
+    *   Patients can view and update their personal information (address, mobile number) and change their account password.
+
+5.  **Submitting Additional Requests:**
+    *   The panel provides an easy way to submit a new blood request. The form will be pre-populated with their existing personal details, simplifying the process.
+
+
+---
+
+#### **V. Donor & Donation Lifecycle Flow**
+
+This section details the end-to-end process from a new donor registering to their blood becoming available in the inventory.
+
+**A. Donor-Initiated Actions (Frontend)**
+
+1.  **Registration:** A prospective donor fills out the registration form on the public website. A `user` and `donor` record are created with a `pending_verification` status.
+2.  **Login & Panel Access:** Once approved by an admin, the donor can log in to their personal panel.
+3.  **Self-Service:** In their panel, the donor can update their profile information and view their past donation history.
+
+**B. Admin-Managed Actions (Backend)**
+
+1.  **Account Verification:** An admin sees the new `pending_verification` donor in the Filament panel. After reviewing the details, the admin uses an "Approve" action to activate the account. The donor is notified via email.
+2.  **Recording a Donation (Inventory Creation):**
+    *   When an active donor donates blood, an admin opens the `BloodUnitResource` in Filament.
+    *   The admin selects the donor, enters the unique bag ID, collection date, and other details.
+    *   Upon saving, a new `blood_unit` is created with a status of `'test_awaited'`, and the donor's `last_donation_date` is updated.
+3.  **Serology Testing:** The admin navigates to the newly created blood unit's record and uses a Relation Manager to enter the results of various serology tests (e.g., HIV, Hepatitis).
+4.  **Inventory Activation (Automation):** Once all required tests are logged with 'negative' results, the system automatically changes the `blood_unit`'s status from `'test_awaited'` to **`'ready_for_issue'`**.
+
+At the conclusion of this flow, a new, safe, and tested unit of blood is officially available in the system's inventory, ready to be allocated to a patient via the Blood Request Module.
 
 ---
 

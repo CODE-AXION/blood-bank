@@ -18,7 +18,6 @@ class BloodRequest extends Model
      */
     protected $fillable = [
         'patient_id',
-        'requester_user_id',
         'blood_group_id',
         'units_requested',
         'urgency_level',
@@ -46,13 +45,6 @@ class BloodRequest extends Model
         return $this->belongsTo(Patient::class);
     }
 
-    /**
-     * Get the user that made the blood request.
-     */
-    public function requesterUser(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'requester_user_id');
-    }
 
     /**
      * Get the blood group for the blood request.
