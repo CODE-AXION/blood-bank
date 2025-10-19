@@ -29,6 +29,12 @@ class DonorResource extends Resource
     protected static ?string $model = Donor::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->isSuperAdmin();
+    }
 
     public static function form(Form $form): Form
     {
