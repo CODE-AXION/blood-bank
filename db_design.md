@@ -210,6 +210,7 @@ Handles the 24-hour reservation feature for blood units.
 *   **`id`**: `unsignedBigInteger` (Primary Key)
 *   **`blood_unit_id`**: `unsignedBigInteger` (Unique Foreign Key to `blood_units.id`)
 *   **`patient_id`**: `unsignedBigInteger` (Foreign Key to `patients.id`)
+*   **`blood_request_id`**: `unsignedBigInteger` (Foreign Key to `blood_requests.id`)
 *   **`reserved_by_user_id`**: `unsignedBigInteger` (Foreign Key to `users.id`) - *Staff who made the reservation.*
 *   **`reservation_date`**: `datetime`
 *   **`expiration_date`**: `datetime` - *Calculated 24 hours from `reservation_date`.*
@@ -339,6 +340,7 @@ For managing advertisements displayed on the website.
     *   Belongs to `blood_unit` (one-to-one)
     *   Belongs to `patient` (many-to-one)
     *   Belongs to `user` (as reserver, many-to-one)
+    *   Belongs to `blood_request` (many-to-one, nullable)
 *   **`transfusion_reactions`**:
     *   Belongs to `patient` (many-to-one)
     *   Belongs to `blood_unit` (many-to-one, nullable)
