@@ -21,6 +21,7 @@ class BloodRequest extends Model
         'blood_group_id',
         'units_requested',
         'urgency_level',
+        'rejection_reason',
         'request_date',
         'required_by_date',
         'status',
