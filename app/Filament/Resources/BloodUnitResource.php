@@ -18,6 +18,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Filters\SelectFilter; // Import SelectFilter
+use App\Filament\Resources\BloodUnitResource\RelationManagers\SerologyTestsRelationManager; // Import SerologyTestsRelationManager
 
 class BloodUnitResource extends Resource
 {
@@ -136,7 +138,18 @@ class BloodUnitResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('status')
+                    ->options([
+                        'collected' => 'Collected',
+                        'test_awaited' => 'Test Awaited',
+                        'ready_for_issue' => 'Ready for Issue',
+                        'issued' => 'Issued',
+                        'expired' => 'Expired',
+                        'discarded' => 'Discarded',
+                        'quarantined' => 'Quarantined',
+                    ])
+                    ->label('Status')
+                    ->attribute('status'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -152,7 +165,7 @@ class BloodUnitResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            SerologyTestsRelationManager::class,
         ];
     }
 
