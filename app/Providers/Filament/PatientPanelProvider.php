@@ -11,6 +11,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Widgets;
+use App\Filament\Patient\Widgets\PatientDashboardOverview;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -36,6 +37,7 @@ class PatientPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Patient/Widgets'), for: 'App\\Filament\\Patient\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+                PatientDashboardOverview::class,
                 Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
