@@ -18,6 +18,7 @@ class ReservedUnit extends Model
     protected $fillable = [
         'blood_unit_id',
         'patient_id',
+        'blood_request_id',
         'reserved_by_user_id',
         'reservation_date',
         'expiration_date',
@@ -40,6 +41,14 @@ class ReservedUnit extends Model
     public function bloodUnit(): BelongsTo
     {
         return $this->belongsTo(BloodUnit::class);
+    }
+
+    /**
+     * Get the blood request .
+     */
+    public function bloodRequest(): BelongsTo
+    {
+        return $this->belongsTo(BloodRequest::class);
     }
 
     /**

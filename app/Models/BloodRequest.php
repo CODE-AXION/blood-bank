@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class BloodRequest extends Model
 {
@@ -61,5 +62,31 @@ class BloodRequest extends Model
     public function bloodIssues(): HasMany
     {
         return $this->hasMany(BloodIssue::class);
+    }
+
+    /**
+     * Get the available blood units for the blood request.
+     */
+    public function bloodUnits(): HasMany
+    {
+        // This is a dummy relationship to satisfy Filament's RelationManager
+        // The actual query logic is in AvailableBloodUnitsRelationManager.
+        return $this->hasMany(BloodUnit::class, 'blood_group_id', 'blood_group_id');
+    }
+
+    /**
+     * Get the reserved unit for the blood request.
+     */
+    public function reservedUnit(): HasOne
+    {
+        return $this->hasOne(ReservedUnit::class);
+    }
+
+    /**
+     * Get the blood issue for the blood request.
+     */
+    public function bloodIssue(): HasOne
+    {
+        return $this->hasOne(BloodIssue::class);
     }
 }

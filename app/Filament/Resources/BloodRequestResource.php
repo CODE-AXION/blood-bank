@@ -20,6 +20,21 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use App\Models\BloodUnit;
+use App\Models\ReservedUnit;
+use App\Models\BloodIssue;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Actions\Action;
+use Carbon\Carbon;
+use Filament\Notifications\Notification;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Actions\Action as TableAction;
+use Illuminate\Support\HtmlString;
 
 class BloodRequestResource extends Resource
 {
@@ -27,52 +42,76 @@ class BloodRequestResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
+    }
+
+    public static function getRecord(?string $id = null): ?\Illuminate\Database\Eloquent\Model
+    {
+        return static::getModel()::find($id);
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Select::make('patient_id')
-                    ->label('Patient')
-                    ->options(Patient::all()->pluck('first_name', 'id'))
-                    ->searchable()
-                    ->required(),
-                Select::make('blood_group_id')
-                    ->label('Blood Group')
-                    ->options(BloodGroup::all()->pluck('group_name', 'id'))
-                    ->searchable()
-                    ->required(),
-                TextInput::make('units_requested')
-                    ->numeric()
-                    ->suffix('units')
-                    ->required(),
-                Select::make('urgency_level')
-                    ->options([
-                        'routine' => 'Routine',
-                        'urgent' => 'Urgent',
-                        'emergency' => 'Emergency',
-                    ])
-                    ->required(),
-                DatePicker::make('request_date')
-                    ->native(false)
-                    ->required(),
-                DatePicker::make('required_by_date')
-                    ->native(false)
-                    ->nullable(),
-                Textarea::make('description')
-                    ->nullable()
-                    ->columnSpan('full'),
-                Select::make('status')
-                    ->options([
-                        'pending' => 'Pending',
-                        'approved' => 'Approved',
-                        'fulfilled' => 'Fulfilled',
-                        'rejected' => 'Rejected',
-                        'canceled' => 'Canceled',
-                    ])
-                    ->required(),
-                Textarea::make('rejection_reason')
-                    ->nullable()
-                    ->columnSpan('full'),
+                Section::make('Blood Request Details')
+                    ->description('Details of the patient\'s blood request.')
+                    ->schema([
+                        Select::make('patient_id')
+                            ->label('Patient')
+                            ->options(Patient::all()->pluck('first_name', 'id'))
+                            ->searchable()
+                            ->required()
+                            ->columnSpan(1),
+                        Select::make('blood_group_id')
+                            ->label('Blood Group')
+                            ->options(BloodGroup::all()->pluck('group_name', 'id'))
+                            ->searchable()
+                            ->required()
+                            ->columnSpan(1),
+                        TextInput::make('units_requested')
+                            ->numeric()
+                            ->suffix('units')
+                            ->required()
+                            ->columnSpan(1),
+                        Select::make('urgency_level')
+                            ->options([
+                                'routine' => 'Routine',
+                                'urgent' => 'Urgent',
+                                'emergency' => 'Emergency',
+                            ])
+                            ->required()
+                            ->columnSpan(1),
+                        DatePicker::make('request_date')
+                            ->native(false)
+                            ->required()
+                            ->columnSpan(1),
+                        DatePicker::make('required_by_date')
+                            ->native(false)
+                            ->nullable()
+                            ->columnSpan(1),
+                        Select::make('status')
+                            ->options([
+                                'pending' => 'Pending',
+                                'approved' => 'Approved',
+                                'fulfilled' => 'Fulfilled',
+                                'rejected' => 'Rejected',
+                                'canceled' => 'Canceled',
+                            ])
+                            ->required()
+                            ->columnSpan(1),
+                        Textarea::make('description')
+                            ->nullable()
+                            ->columnSpan('full'),
+                        Textarea::make('rejection_reason')
+                            ->nullable()
+                            ->columnSpan('full'),
+                    ])->columns(2),
             ]);
     }
 
@@ -152,6 +191,7 @@ class BloodRequestResource extends Resource
     {
         return [
             //
+            // RelationManagers\AvailableBloodUnitsRelationManager::class,
         ];
     }
 

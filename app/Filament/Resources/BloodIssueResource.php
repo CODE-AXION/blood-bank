@@ -34,7 +34,7 @@ class BloodIssueResource extends Resource
             ->schema([
                 Select::make('blood_request_id')
                     ->label('Blood Request')
-                    ->options(BloodRequest::all()->pluck('id', 'id'))
+                    ->options(BloodRequest::all()->pluck('description', 'id'))
                     ->searchable()
                     ->nullable(),
                 Select::make('patient_id')

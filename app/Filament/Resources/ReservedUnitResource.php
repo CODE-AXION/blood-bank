@@ -82,7 +82,7 @@ class ReservedUnitResource extends Resource
                     ->label('Patient Name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('bloodRequest.id')
+                TextColumn::make('bloodRequest.description')
                     ->label('Request ID')
                     ->searchable()
                     ->sortable(),
