@@ -39,6 +39,23 @@ class BloodRequest extends Model
         'required_by_date' => 'date',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            if (! $model->request_date) {
+                $model->request_date = now();
+            }
+    
+            if (auth()->check() && ! $model->patient_id) {
+                $model->patient_id = auth()->user()->patient->id;
+            }
+    
+            if (! $model->status) {
+                $model->status = 'pending';
+            }
+        });
+    }
+
     /**
      * Get the patient that made the blood request.
      */
