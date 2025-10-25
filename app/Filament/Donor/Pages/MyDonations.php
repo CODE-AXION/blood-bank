@@ -29,19 +29,31 @@ class MyDonations extends Page implements HasTable
                     ->whereHas('donor.user', function (Builder $query) {
                         $query->where('id', Auth::id());
                     })
-                    ->with('camp')
+                    ->with('collectionCamp')
             )
             ->columns([
                 TextColumn::make('collection_date')
                     ->date()
                     ->label('Donation Date'),
-                TextColumn::make('camp.name')
+                TextColumn::make('collectionCamp.name')
                     ->default('Main Blood Bank')
                     ->label('Location'),
                 TextColumn::make('component_type')
                     ->label('Component Type'),
                 TextColumn::make('unique_bag_id')
                     ->label('Bag ID'),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'collected' => 'gray',
+                        'test_awaited' => 'warning',
+                        'tested' => 'info',
+                        'ready_for_issue' => 'success',
+                        'issued' => 'success',
+                        'expired' => 'danger',
+                        'discarded' => 'danger',
+                        'quarantined' => 'danger',
+                    }),
             ]);
     }
 }
