@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Donor\Pages\Dashboard as DonorDashboard;
 use App\Filament\Donor\Pages\MyDonations;
+use App\Filament\Donor\Pages\MyProfile;
 
 class DonorPanelProvider extends PanelProvider
 {
@@ -35,6 +36,7 @@ class DonorPanelProvider extends PanelProvider
             ->pages([
                 DonorDashboard::class,
                 MyDonations::class,
+                MyProfile::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Donor/Widgets'), for: 'App\\Filament\\Donor\\Widgets')
             ->widgets([
