@@ -4,16 +4,21 @@ namespace App\Filament\Resources\DonorResource\Pages;
 
 use App\Filament\Resources\DonorResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\EditRecord;
 
-class ListDonors extends ListRecords
+class EditDonor extends EditRecord
 {
     protected static string $resource = DonorResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(), // Removed as per requirement
+            Actions\DeleteAction::make(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

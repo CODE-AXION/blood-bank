@@ -23,6 +23,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 
 class DonorResource extends Resource
 {
@@ -40,63 +42,103 @@ class DonorResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('user.name')
-                    ->label('Name')
-                    ->disabled(),
-                TextInput::make('user.email')
-                    ->label('Email')
-                    ->disabled(),
-                TextInput::make('first_name')
-                    ->label('First Name')
-                    ->disabled(),
-                TextInput::make('last_name')
-                    ->label('Last Name')
-                    ->disabled(),
-                TextInput::make('mobile_number')
-                    ->label('Mobile Number')
-                    ->disabled(),
-                Select::make('gender')
-                    ->options([
-                        'male' => 'Male',
-                        'female' => 'Female',
-                        'other' => 'Other',
+                Forms\Components\Group::make()
+                    ->schema([
+                        TextInput::make('first_name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('last_name')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('mobile_number')
+                            ->required()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(20),
+                        Select::make('gender')
+                            ->options([
+                                'male' => 'Male',
+                                'female' => 'Female',
+                                'other' => 'Other',
+                            ])
+                            ->required(),
+                        DatePicker::make('date_of_birth')
+                            ->required()
+                            ->maxDate(now()),
+                        Textarea::make('address')
+                            ->nullable()
+                            ->columnSpanFull(),
                     ])
-                    ->disabled(),
-                DatePicker::make('date_of_birth')
-                    ->label('Date of Birth')
-                    ->disabled(),
-                Textarea::make('address')
-                    ->label('Address')
-                    ->disabled(),
-                Select::make('city_id')
-                    ->relationship('city', 'name')
-                    ->label('City')
-                    ->disabled(),
-                Select::make('state_id')
-                    ->relationship('state', 'name')
-                    ->label('State')
-                    ->disabled(),
-                Select::make('blood_group_id')
-                    ->relationship('bloodGroup', 'group_name')
-                    ->label('Blood Group')
-                    ->disabled(),
-                DatePicker::make('last_donation_date')
-                    ->label('Last Donation Date')
-                    ->disabled(),
-                DatePicker::make('eligible_to_donate_until')
-                    ->label('Eligible to Donate Until')
-                    ->disabled(),
-                TextInput::make('enrollment_number')
-                    ->label('Enrollment Number')
-                    ->disabled(),
-                Select::make('status')
-                    ->options([
-                        'pending_verification' => 'Pending Verification',
-                        'active' => 'Active',
-                        'inactive' => 'Inactive',
-                        'suspended' => 'Suspended',
+                    ->columns(2),
+
+                Forms\Components\Group::make()
+                    ->schema([
+                        Select::make('state_id')
+                            ->relationship('state', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        Select::make('city_id')
+                            ->relationship('city', 'name')
+                            ->required()
+                            ->searchable()
+                            ->preload()
+                            ->columnSpanFull(),
+                        Select::make('blood_group_id')
+                            ->relationship('bloodGroup', 'group_name')
+                            ->required()
+                            ->searchable()
+                            ->preload(),
+                        DatePicker::make('last_donation_date')
+                            ->nullable()
+                            ->maxDate(now()),
+                        DatePicker::make('eligible_to_donate_until')
+                            ->nullable()
+                            ->minDate(now()),
+                        TextInput::make('enrollment_number')
+                            ->nullable()
+                            ->maxLength(255),
+                        Select::make('status')
+                            ->options([
+                                'pending_verification' => 'Pending Verification',
+                                'active' => 'Active',
+                                'inactive' => 'Inactive',
+                                'suspended' => 'Suspended',
+                            ])
+                            ->required()
+                            ->default('pending_verification'),
                     ])
-                    ->disabled(),
+                    ->columns(2),
+                
+                Forms\Components\Section::make('User Account Information')
+                    ->schema([
+                        TextInput::make('user_name')
+                            ->label('User Name')
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->maxLength(255)
+                            ->hiddenOn('edit')
+                            ->dehydrateStateUsing(fn (?string $state) => $state ?? (fn (callable $get) => $get('first_name') . ' ' . $get('last_name'))),
+                        TextInput::make('user_email')
+                            ->label('User Email')
+                            ->email()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->unique(User::class, 'email', ignoreRecord: true)
+                            ->maxLength(255),
+                        TextInput::make('password')
+                            ->password()
+                            // ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                            // ->dehydrated(fn (?string $state): bool => filled($state))
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->maxLength(255)
+                            ->hiddenOn('edit'),
+                        TextInput::make('password_confirmation')
+                            ->password()
+                            ->requiredWith('password')
+                            ->maxLength(255)
+                            ->hiddenOn('edit')
+                            ->same('password'),
+                    ])
+                    ->columns(2)
+                    ->visible(fn (string $operation): bool => $operation === 'create' || $form->getRecord()->user === null),
             ]);
     }
 
@@ -204,9 +246,44 @@ class DonorResource extends Resource
     {
         return [
             'index' => Pages\ListDonors::route('/'),
-            // 'create' => Pages\CreateDonor::route('/create'), // Removing create page
-            // 'edit' => Pages\EditDonor::route('/{record}/edit'), // Removing edit page
+            'create' => Pages\CreateDonor::route('/create'),
+            'edit' => Pages\EditDonor::route('/{record}/edit'),
             'view' => Pages\ViewDonor::route('/{record}'),
         ];
+    }
+
+    public static function mutateFormDataBeforeCreate(array $data): array
+    {
+        $user = User::create([
+            'name' => $data['first_name'] . ' ' . $data['last_name'],
+            'email' => $data['user_email'],
+            'password' => $data['password'],
+            'role' => 'donor',
+        ]);
+
+        $data['user_id'] = $user->id;
+        unset($data['user_name']);
+        unset($data['user_email']);
+        unset($data['password']);
+        unset($data['password_confirmation']);
+
+        return $data;
+    }
+
+    public static function mutateFormDataBeforeSave(array $data, ?Donor $record = null): array
+    {
+        if ($record && $record->user) {
+            $record->user->update([
+                'name' => $data['first_name'] . ' ' . $data['last_name'],
+                'email' => $data['user_email'] ?? $record->user->email,
+            ]);
+        } 
+        
+        unset($data['user_name']);
+        unset($data['user_email']);
+        unset($data['password']);
+        unset($data['password_confirmation']);
+
+        return $data;
     }
 }
