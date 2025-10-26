@@ -149,15 +149,15 @@
                     <svg class="w-12 h-12 mx-auto text-red-600 blood-drop" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
-                    <h3 class="text-4xl font-bold text-red-600">1,200+</h3>
-                    <p class="text-gray-600 font-medium">Lives Saved</p>
+                    <h3 class="text-4xl font-bold text-red-600">{{ $availableUnitsCount }}</h3>
+                    <p class="text-gray-600 font-medium">Available Units</p>
                 </div>
                 <div class="text-center space-y-2 card-hover bg-gradient-to-br from-red-50 to-white p-6 rounded-xl border border-red-100">
                     <svg class="w-12 h-12 mx-auto text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                     </svg>
-                    <h3 class="text-4xl font-bold text-red-600">850+</h3>
-                    <p class="text-gray-600 font-medium">Active Donors</p>
+                    <h3 class="text-4xl font-bold text-red-600">{{ $latestCamps->count() }}</h3>
+                    <p class="text-gray-600 font-medium">Upcoming Camps</p>
                 </div>
                 <div class="text-center space-y-2 card-hover bg-gradient-to-br from-red-50 to-white p-6 rounded-xl border border-red-100">
                     <svg class="w-12 h-12 mx-auto text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -359,136 +359,56 @@
                 <h2 class="text-4xl font-bold text-gray-800 mb-4">Upcoming Blood Donation Camps</h2>
                 <p class="text-gray-600 text-lg">Find a camp near you and schedule your donation</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition card-hover border border-gray-100">
-                    <div class="bg-gradient-to-r from-red-600 to-red-700 p-6 text-white">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">Upcoming</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-1">November 15, 2025</h3>
-                        <p class="text-red-100">9:00 AM - 5:00 PM</p>
-                    </div>
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold text-gray-800 mb-3">Community Blood Drive</h4>
-                        <div class="space-y-3 mb-6">
-                            <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <div>
-                                    <p class="text-gray-800 font-medium">City Hall, Downtown</p>
-                                    <p class="text-gray-500 text-sm">Main Auditorium</p>
+            @if($latestCamps->isEmpty())
+                <p class="text-center text-gray-600 text-lg">No upcoming camps found. Please check back later!</p>
+            @else
+                <div class="grid md:grid-cols-3 gap-8">
+                    @foreach ($latestCamps as $camp)
+                        <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition card-hover border border-gray-100">
+                            <div class="bg-gradient-to-r from-red-600 to-red-700 p-6 text-white">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">Upcoming</span>
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold mb-1">{{ \Carbon\Carbon::parse($camp->camp_date)->format('M d, Y') }}</h3>
+                                <p class="text-red-100">{{ \Carbon\Carbon::parse($camp->start_time)->format('h:i A') }} - {{ \Carbon\Carbon::parse($camp->end_time)->format('h:i A') }}</p>
+                            </div>
+                            <div class="p-6">
+                                <h4 class="text-xl font-bold text-gray-800 mb-3">{{ $camp->name }}</h4>
+                                <div class="space-y-3 mb-6">
+                                    <div class="flex items-start space-x-3">
+                                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                        <div>
+                                            <p class="text-gray-800 font-medium">{{ $camp->address }}, {{ $camp->city->name ?? '' }}, {{ $camp->state->name ?? '' }}</p>
+                                            <p class="text-gray-500 text-sm">{{ Str::limit($camp->description, 50) }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start space-x-3">
+                                        <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        <div>
+                                            <p class="text-gray-800 font-medium">{{ $camp->organizer }}</p>
+                                            <p class="text-gray-500 text-sm">Organizer</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <span class="text-sm text-gray-500">Available: {{ $camp->bloodUnits->where('status', 'ready_for_issue')->where('serology_test_status', 'passed')->count() }} units</span>
+                                    <a href="#" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
+                                        View Details
+                                    </a>
                                 </div>
                             </div>
-                            <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                                <div>
-                                    <p class="text-gray-800 font-medium">Local Health Department</p>
-                                    <p class="text-gray-500 text-sm">Organizer</p>
-                                </div>
-                            </div>
                         </div>
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <span class="text-sm text-gray-500">45 slots available</span>
-                            <a href="#" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
-                                Register Now
-                            </a>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
-
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition card-hover border border-gray-100">
-                    <div class="bg-gradient-to-r from-red-600 to-red-700 p-6 text-white">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">Upcoming</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-1">December 2, 2025</h3>
-                        <p class="text-red-100">10:00 AM - 4:00 PM</p>
-                    </div>
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold text-gray-800 mb-3">University Campus Donation</h4>
-                        <div class="space-y-3 mb-6">
-                            <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <div>
-                                    <p class="text-gray-800 font-medium">University Main Auditorium</p>
-                                    <p class="text-gray-500 text-sm">Student Center Building</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                                <div>
-                                    <p class="text-gray-800 font-medium">Student Volunteer Association</p>
-                                    <p class="text-gray-500 text-sm">Organizer</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <span class="text-sm text-gray-500">32 slots available</span>
-                            <a href="#" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
-                                Register Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition card-hover border border-gray-100">
-                    <div class="bg-gradient-to-r from-red-600 to-red-700 p-6 text-white">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">Upcoming</span>
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-1">December 20, 2025</h3>
-                        <p class="text-red-100">8:00 AM - 6:00 PM</p>
-                    </div>
-                    <div class="p-6">
-                        <h4 class="text-xl font-bold text-gray-800 mb-3">Annual Winter Blood Drive</h4>
-                        <div class="space-y-3 mb-6">
-                            <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                <div>
-                                    <p class="text-gray-800 font-medium">Community Center</p>
-                                    <p class="text-gray-500 text-sm">Central Hall</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-red-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                </svg>
-                                <div>
-                                    <p class="text-gray-800 font-medium">Red Cross</p>
-                                    <p class="text-gray-500 text-sm">Organizer</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between pt-4 border-t border-gray-100">
-                            <span class="text-sm text-gray-500">68 slots available</span>
-                            <a href="#" class="px-6 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
-                                Register Now
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @endif
             <div class="text-center mt-10">
                 <a href="#" class="inline-flex items-center space-x-2 text-red-600 font-semibold hover:text-red-700">
                     <span>View All Camps</span>
@@ -508,10 +428,10 @@
                 Join thousands of donors who are making a difference. Your donation could be the gift of life for someone in need.
             </p>
             <div class="flex flex-wrap justify-center gap-4">
-                <a href="/register" class="px-8 py-4 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 transition shadow-xl">
+                <a href="{{ route('donor.register.form') }}" class="px-8 py-4 bg-white text-red-600 font-bold rounded-lg hover:bg-gray-100 transition shadow-xl">
                     Register as Donor
                 </a>
-                <a href="#" class="px-8 py-4 bg-red-700 text-white font-bold rounded-lg hover:bg-red-800 transition border-2 border-white/30">
+                <a href="{{ route('blood.search') }}" class="px-8 py-4 bg-red-700 text-white font-bold rounded-lg hover:bg-red-800 transition border-2 border-white/30">
                     Find Blood Near You
                 </a>
             </div>

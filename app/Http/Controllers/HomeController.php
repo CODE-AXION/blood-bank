@@ -5,11 +5,30 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\BloodGroup;
 use App\Models\BloodUnit;
+use App\Models\Camp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
 class HomeController extends Controller
 {
+    public function index()
+    {
+        $latestCamps = Camp::where('status', 'active')
+            ->orderBy('camp_date', 'desc')
+            ->limit(3)
+            ->get();
+
+        $availableUnitsCount = BloodUnit::where('status', 'ready_for_issue')
+            ->where('serology_test_status', 'passed')
+            ->where('expiry_date', '>=', Carbon::today())
+            ->whereDoesntHave('reservedUnit', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->count();
+
+        return view('home', compact('latestCamps', 'availableUnitsCount'));
+    }
+
     // ... other methods like requestPage, storeRequest ...
 
     public function searchPage()
