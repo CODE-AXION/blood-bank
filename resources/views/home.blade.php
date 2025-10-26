@@ -52,7 +52,7 @@
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Home</a>
-                    <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Find Blood</a>
+                    <a href="/find-blood" class="text-gray-700 hover:text-red-600 font-medium transition">Find Blood</a>
                     <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Camps</a>
                     <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">About</a>
                     <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Contact</a>
