@@ -27,6 +27,13 @@ class BloodUnitResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-archive-box';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+        return $user && $user->isAdmin() && !$user->isSuperAdmin();
+    }
+
+
     public static function form(Form $form): Form
     {
         return $form
