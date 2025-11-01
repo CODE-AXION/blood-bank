@@ -51,11 +51,10 @@
                     <span class="text-2xl font-bold text-gray-800">Life<span class="text-red-600">Saver</span></span>
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Home</a>
+                    <a href="/" class="text-gray-700 hover:text-red-600 font-medium transition">Home</a>
                     <a href="/find-blood" class="text-gray-700 hover:text-red-600 font-medium transition">Find Blood</a>
-                    <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Camps</a>
-                    <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">About</a>
-                    <a href="#" class="text-gray-700 hover:text-red-600 font-medium transition">Contact</a>
+                    <a href="/request-blood" class="text-gray-700 hover:text-red-600 font-medium transition">Request Blood</a>
+                    <a href="/register/donor" class="text-gray-700 hover:text-red-600 font-medium transition">Register as Donor</a>
                 </div>
                 <div class="flex items-center space-x-3">
                     <a href="/login" class="px-5 py-2 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">Login</a>

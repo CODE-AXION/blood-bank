@@ -43,7 +43,7 @@
                         <h5 class="card-title text-danger">Stock Not Available</h5>
                         <p class="fs-4">Unfortunately, we do not have any units of <strong>{{ $searchedBloodGroup->group_name }}</strong> available right now.</p>
                         <p class="card-text">You can submit an urgent request, and we will notify you as soon as a match is found.</p>
-                        {{-- <a href="{{ route('blood.request') }}" class="btn btn-warning">Submit a Blood Request</a> --}}
+                        <a href="{{ route('blood.request.form') }}" class="btn btn-warning">Submit a Blood Request</a>
                     @endif
                 </div>
             </div>
