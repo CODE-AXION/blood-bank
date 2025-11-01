@@ -8,6 +8,7 @@
 </head>
 <body class="bg-gray-100 min-h-screen flex items-center justify-center py-10">
     <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-4xl">
+        <a href="/" class="text-red-600 hover:text-red-700 font-medium transition">Back to Home</a>
         <h2 class="text-2xl font-bold text-center text-red-700 mb-6">Donor Registration</h2>
 
         @if (session('success'))

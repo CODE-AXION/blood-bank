@@ -15,7 +15,6 @@ class HomeController extends Controller
     {
         $latestCamps = Camp::where('status', 'active')
             ->orderBy('camp_date', 'desc')
-            ->limit(3)
             ->get();
 
         $availableUnitsCount = BloodUnit::where('status', 'ready_for_issue')
