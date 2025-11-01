@@ -26,16 +26,10 @@ class HomeController extends Controller
             })
             ->count();
 
-        return view('home', compact('latestCamps', 'availableUnitsCount'));
-    }
-
-    // ... other methods like requestPage, storeRequest ...
-
-    public function searchPage()
-    {
-        // Pass the list of blood groups to the search form view
         $bloodGroups = BloodGroup::orderBy('group_name')->get();
-        return view('search', ['bloodGroups' => $bloodGroups]);
+        $searchedBloodGroup = null;
+
+        return view('home', compact('latestCamps', 'availableUnitsCount', 'bloodGroups', 'searchedBloodGroup'));
     }
 
     public function handleSearch(Request $request)
@@ -71,13 +65,17 @@ class HomeController extends Controller
             ->count();
             
         // Get the blood group name to display in the results
-        $bloodGroup = BloodGroup::find($bloodGroupId);
+        $searchedBloodGroup = BloodGroup::find($bloodGroupId);
 
-        // 4. Return the result to the same view
-        return view('search', [
-            'bloodGroups' => BloodGroup::orderBy('group_name')->get(),
-            'stockCount' => $availableUnitsCount,
-            'searchedBloodGroup' => $bloodGroup,
-        ]);
+        // Fetch latest camps and all blood groups again for the home page
+        $latestCamps = Camp::where('status', 'active')
+            ->orderBy('camp_date', 'desc')
+            ->limit(3)
+            ->get();
+
+        $bloodGroups = BloodGroup::orderBy('group_name')->get();
+
+        // 4. Return the result to the home view
+        return view('home', compact('latestCamps', 'availableUnitsCount', 'bloodGroups', 'availableUnitsCount', 'searchedBloodGroup'));
     }
 }
