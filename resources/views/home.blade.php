@@ -52,13 +52,22 @@
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="/" class="text-gray-700 hover:text-red-600 font-medium transition">Home</a>
-                    <a href="/find-blood" class="text-gray-700 hover:text-red-600 font-medium transition">Find Blood</a>
                     <a href="/request-blood" class="text-gray-700 hover:text-red-600 font-medium transition">Request Blood</a>
                     <a href="/register/donor" class="text-gray-700 hover:text-red-600 font-medium transition">Register as Donor</a>
                 </div>
                 <div class="flex items-center space-x-3">
-                    <a href="/login" class="px-5 py-2 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">Login</a>
-                    <a href="/request-blood" class="px-5 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition shadow-md">Register</a>
+                    @if(auth()->check())
+                        @if(auth()->user()->isAdmin())
+                            <a href="/admin" class="px-5 py-2 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">Admin Dashboard</a>
+                        @elseif(auth()->user()->isDonor())
+                            <a href="/donor/dashboard" class="px-5 py-2 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">Donor Dashboard</a>
+                        @elseif(auth()->user()->isPatient())
+                            <a href="/patient" class="px-5 py-2 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">Patient Dashboard</a>
+                        @endif
+                    @else
+                        <a href="/login" class="px-5 py-2 text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">Login</a>
+                        <a href="/request-blood" class="px-5 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition shadow-md">Register</a>
+                    @endif
                 </div>
             </div>
         </div>
