@@ -34,6 +34,7 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Placeholder;
 use Filament\Tables\Actions\Action as TableAction;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\HtmlString;
 
 class BloodRequestResource extends Resource
@@ -185,6 +186,55 @@ class BloodRequestResource extends Resource
                     ->color('success')
                     ->icon('heroicon-o-check-circle')
                     ->hidden(fn (BloodRequest $record): bool => $record->status !== 'pending'),
+            ])
+            ->headerActions([
+                Tables\Actions\Action::make('exportCsv')
+                    ->label('Export as CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('info')
+                    ->action(function () {
+                        $filename = 'blood_requests_' . now()->format('Y_m_d_His') . '.csv';
+    
+                        $bloodRequests = \App\Models\BloodRequest::with(['patient', 'bloodGroup'])->get();
+    
+                        $headers = [
+                            'Content-Type' => 'text/csv',
+                            'Content-Disposition' => "attachment; filename=\"$filename\"",
+                        ];
+    
+                        $columns = [
+                            'Patient Name',
+                            'Blood Group',
+                            'Units Requested',
+                            'Urgency Level',
+                            'Status',
+                            'Request Date',
+                            'Required By Date',
+                            'Description',
+                        ];
+    
+                        $callback = function () use ($bloodRequests, $columns) {
+                            $file = fopen('php://output', 'w');
+                            fputcsv($file, $columns);
+    
+                            foreach ($bloodRequests as $request) {
+                                fputcsv($file, [
+                                    $request->patient?->first_name,
+                                    $request->bloodGroup?->group_name,
+                                    $request->units_requested,
+                                    ucfirst($request->urgency_level),
+                                    ucfirst($request->status),
+                                    optional($request->request_date)->format('Y-m-d'),
+                                    optional($request->required_by_date)->format('Y-m-d'),
+                                    $request->description,
+                                ]);
+                            }
+    
+                            fclose($file);
+                        };
+    
+                        return Response::stream($callback, 200, $headers);
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

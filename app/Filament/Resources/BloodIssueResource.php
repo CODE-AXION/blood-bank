@@ -141,6 +141,15 @@ class BloodIssueResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_csv')
+                    ->label('Export CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('info')
+                    ->action(function () {
+                        return static::exportCsv();
+                    }),
+            ])
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -149,6 +158,56 @@ class BloodIssueResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    /**
+     * Export Blood Issues as CSV
+     */
+    public static function exportCsv()
+    {
+        $filename = 'blood_issues_' . now()->format('Y_m_d_H_i_s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $columns = [
+            'ID',
+            'Patient Name',
+            'Blood Unit ID',
+            'Issue Date',
+            'Issued By',
+            'Cross Match Status',
+            'Payment Status',
+            'Total Amount',
+            'Receipt Number',
+        ];
+
+        $callback = function () use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            $bloodIssues = \App\Models\BloodIssue::with(['patient', 'bloodUnit', 'issuedBy'])->get();
+
+            foreach ($bloodIssues as $issue) {
+                fputcsv($file, [
+                    $issue->id,
+                    optional($issue->patient)->first_name ?? 'N/A',
+                    optional($issue->bloodUnit)->unique_bag_id ?? 'N/A',
+                    optional($issue->issue_date)?->format('Y-m-d H:i:s') ?? 'N/A',
+                    optional($issue->issuedBy)->name ?? 'N/A',
+                    $issue->cross_match_status ?? 'N/A',
+                    $issue->payment_status ?? 'N/A',
+                    $issue->total_amount ?? '0',
+                    $issue->receipt_number ?? '-',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     public static function getRelations(): array

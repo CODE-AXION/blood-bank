@@ -123,6 +123,49 @@ class PatientResource extends Resource
             ->filters([
                 //
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_all_csv')
+                    ->label('Export All CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function () {
+                        $filename = 'patients_export_' . now()->format('Y_m_d_H_i_s') . '.csv';
+                        $filepath = storage_path('app/public/' . $filename);
+    
+                        $handle = fopen($filepath, 'w');
+    
+                        // CSV headers
+                        fputcsv($handle, [
+                            'Patient Name',
+                            'Email',
+                            'Mobile Number',
+                            'Gender',
+                            'Date of Birth',
+                            'Hospital Name',
+                            'Created At',
+                        ]);
+    
+                        // Fetch all patients
+                        $patients = \App\Models\Patient::with('user')->get();
+    
+                        foreach ($patients as $patient) {
+                            fputcsv($handle, [
+                                $patient->user?->name,
+                                $patient->user?->email,
+                                $patient->mobile_number,
+                                ucfirst($patient->gender),
+                                optional($patient->date_of_birth)->format('Y-m-d'),
+                                $patient->hospital_name,
+                                optional($patient->created_at)->format('Y-m-d H:i:s'),
+                            ]);
+                        }
+    
+                        fclose($handle);
+    
+                        // Return download response
+                        return response()->download($filepath)->deleteFileAfterSend(true);
+                    })
+            ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
                 

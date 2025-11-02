@@ -228,6 +228,56 @@ class DonorResource extends Resource
                     ->icon('heroicon-o-x-circle'),
                 Tables\Actions\ViewAction::make(),
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_all_csv')
+                    ->label('Export All CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->color('success')
+                    ->action(function () {
+                        $filename = 'donors_export_' . now()->format('Y_m_d_H_i_s') . '.csv';
+                        $filepath = storage_path('app/public/' . $filename);
+    
+                        $handle = fopen($filepath, 'w');
+    
+                        // CSV headers
+                        fputcsv($handle, [
+                            'Name',
+                            'Email',
+                            'Mobile Number',
+                            'Gender',
+                            'Blood Group',
+                            'City',
+                            'State',
+                            'Last Donation Date',
+                            'Eligible To Donate Until',
+                            'Status',
+                            'Created At',
+                        ]);
+    
+                        // Fetch all donors
+                        $donors = \App\Models\Donor::with(['user', 'bloodGroup', 'city', 'state'])->get();
+    
+                        foreach ($donors as $donor) {
+                            fputcsv($handle, [
+                                $donor->user?->name,
+                                $donor->user?->email,
+                                $donor->mobile_number,
+                                ucfirst($donor->gender),
+                                $donor->bloodGroup?->group_name,
+                                $donor->city?->name,
+                                $donor->state?->name,
+                                optional($donor->last_donation_date)->format('Y-m-d'),
+                                optional($donor->eligible_to_donate_until)->format('Y-m-d'),
+                                ucfirst($donor->status),
+                                optional($donor->created_at)->format('Y-m-d H:i:s'),
+                            ]);
+                        }
+    
+                        fclose($handle);
+    
+                        return response()->download($filepath)->deleteFileAfterSend(true);
+                    })
+            ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

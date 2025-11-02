@@ -158,6 +158,14 @@ class BloodUnitResource extends Resource
                     ->label('Status')
                     ->attribute('status'),
             ])
+            ->headerActions([
+                Tables\Actions\Action::make('export_csv')
+                    ->label('Export CSV')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->action(function () {
+                        return static::exportCsv();
+                    }),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
@@ -168,6 +176,63 @@ class BloodUnitResource extends Resource
                 ]),
             ]);
     }
+
+        /**
+     * Export Blood Units as CSV
+     */
+    public static function exportCsv()
+    {
+        $filename = 'blood_units_' . now()->format('Y_m_d_H_i_s') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $columns = [
+            'ID',
+            'Unique Bag ID',
+            'Donor Name',
+            'Blood Group',
+            'Collection Date',
+            'Expiry Date',
+            'Component Type',
+            'Volume (ml)',
+            'Status',
+            'Serology Test Status',
+            'Collection Camp',
+            'Storage Location',
+        ];
+
+        $callback = function () use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            $bloodUnits = \App\Models\BloodUnit::with(['donor', 'bloodGroup', 'collectionCamp'])->get();
+
+            foreach ($bloodUnits as $unit) {
+                fputcsv($file, [
+                    $unit->id,
+                    $unit->unique_bag_id,
+                    optional($unit->donor)->first_name . ' ' . optional($unit->donor)->last_name,
+                    optional($unit->bloodGroup)->group_name ?? 'N/A',
+                    optional($unit->collection_date)?->format('Y-m-d') ?? '-',
+                    optional($unit->expiry_date)?->format('Y-m-d') ?? '-',
+                    ucfirst(str_replace('_', ' ', $unit->component_type)) ?? 'N/A',
+                    $unit->volume_ml ?? '0',
+                    ucfirst(str_replace('_', ' ', $unit->status ?? 'N/A')),
+                    ucfirst(str_replace('_', ' ', $unit->serology_test_status ?? 'N/A')),
+                    optional($unit->collectionCamp)->name ?? 'Main Blood Bank',
+                    $unit->storage_location ?? '-',
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
 
     public static function getRelations(): array
     {
