@@ -1,15 +1,5 @@
-Based on the modules and features outlined in the PDF, here is a comprehensive database design tailored for a Laravel project, including tables, columns, data types, and relationships. This design aims to cover all specified functionalities without missing any details.
-
----
-
 ### Database Design for Blood Bank Management System (Laravel)
 
-**General Considerations for Laravel:**
-*   All tables will implicitly have `id` (primary key, auto-incrementing `UNSIGNED BIGINT`) and `created_at`, `updated_at` (`TIMESTAMP`) columns due to Laravel's Eloquent ORM conventions, unless specified otherwise.
-*   Foreign key columns will typically be `unsignedBigInteger`.
-*   ENUM types are used for clear status and type definitions; these can be implemented as `ENUM` in MySQL or as `VARCHAR` with validation in Laravel if preferred for broader compatibility.
-
----
 
 #### **1. `users` Table**
 This table will store general user information and serve as the base for different roles (Admin, Donor, Patient).
@@ -220,63 +210,6 @@ Handles the 24-hour reservation feature for blood units.
 
 ---
 
-#### **14. `transfusion_reactions` Table**
-Records any adverse reactions during or after a transfusion.
-
-*   **`id`**: `unsignedBigInteger` (Primary Key)
-*   **`patient_id`**: `unsignedBigInteger` (Foreign Key to `patients.id`)
-*   **`blood_unit_id`**: `unsignedBigInteger` (Nullable, Foreign Key to `blood_units.id`) - *If linked to a specific unit.*
-*   **`reaction_date`**: `datetime`
-*   **`reaction_type`**: `string` (e.g., 'Febrile non-hemolytic', 'Allergic', 'Acute hemolytic')
-*   **`severity`**: `enum` ('mild', 'moderate', 'severe', 'fatal')
-*   **`description`**: `text`
-*   **`reported_by_user_id`**: `unsignedBigInteger` (Nullable, Foreign Key to `users.id`) - *Staff who reported.*
-*   **`created_at`**: `timestamp`
-*   **`updated_at`**: `timestamp`
-
----
-
-#### **15. `galleries` Table**
-For storing images/media, potentially linked to camps.
-
-*   **`id`**: `unsignedBigInteger` (Primary Key)
-*   **`title`**: `string`
-*   **`image_path`**: `string` (Path to the image file)
-*   **`description`**: `text` (Nullable)
-*   **`camp_id`**: `unsignedBigInteger` (Nullable, Foreign Key to `camps.id`) - *If the image is from a specific camp.*
-*   **`created_at`**: `timestamp`
-*   **`updated_at`**: `timestamp`
-
----
-
-#### **16. `news` Table**
-For publishing news articles or updates on the system.
-
-*   **`id`**: `unsignedBigInteger` (Primary Key)
-*   **`title`**: `string`
-*   **`content`**: `text`
-*   **`publication_date`**: `date`
-*   **`author_user_id`**: `unsignedBigInteger` (Nullable, Foreign Key to `users.id`) - *Admin who published.*
-*   **`is_published`**: `boolean` (Default: `false`)
-*   **`created_at`**: `timestamp`
-*   **`updated_at`**: `timestamp`
-
----
-
-#### **17. `advertisements` Table**
-For managing advertisements displayed on the website.
-
-*   **`id`**: `unsignedBigInteger` (Primary Key)
-*   **`title`**: `string`
-*   **`image_path`**: `string` (Nullable, path to ad image)
-*   **`content`**: `text` (Nullable, for text-based ads)
-*   **`start_date`**: `date`
-*   **`end_date`**: `date` (Nullable)
-*   **`is_active`**: `boolean` (Default: `true`)
-*   **`created_at`**: `timestamp`
-*   **`updated_at`**: `timestamp`
-
----
 
 ### **Relationships Summary:**
 
@@ -287,8 +220,6 @@ For managing advertisements displayed on the website.
     *   Has many `blood_requests` (as patient, one-to-many)
     *   Has many `blood_issues` (as issuer, one-to-many)
     *   Has many `reserved_units` (as reserver, one-to-many)
-    *   Has many `transfusion_reactions` (as reporter, one-to-many)
-    *   Has many `news` (as author, one-to-many)
 *   **`donors`**:
     *   Belongs to `user` (one-to-one, inverse)
     *   Belongs to `blood_group` (many-to-one)
@@ -308,7 +239,6 @@ For managing advertisements displayed on the website.
     *   Belongs to `state` (many-to-one)
     *   Has many `camp_staff` entries (one-to-many through `camp_staff` pivot)
     *   Has many `blood_units` (one-to-many, for units collected at the camp)
-    *   Has many `galleries` (one-to-many)
 *   **`blood_units`**:
     *   Belongs to `donor` (many-to-one)
     *   Belongs to `blood_group` (many-to-one)
@@ -316,7 +246,6 @@ For managing advertisements displayed on the website.
     *   Has many `serology_tests` (one-to-many)
     *   Has one `blood_issue` (one-to-one, inverse - once issued, it's done)
     *   Has one `reserved_unit` (one-to-one, inverse)
-    *   Has many `transfusion_reactions` (one-to-many, nullable)
 *   **`serology_tests`**:
     *   Belongs to `blood_unit` (many-to-one)
     *   Belongs to `user` (as tester, many-to-one)
@@ -325,7 +254,6 @@ For managing advertisements displayed on the website.
     *   Has many `blood_requests` (one-to-many)
     *   Has many `blood_issues` (one-to-many)
     *   Has many `reserved_units` (one-to-many)
-    *   Has many `transfusion_reactions` (one-to-many)
 *   **`blood_requests`**:
     *   Belongs to `patient` (many-to-one, nullable)
     *   Belongs to `user` (as requester, many-to-one, nullable)
@@ -341,13 +269,3 @@ For managing advertisements displayed on the website.
     *   Belongs to `patient` (many-to-one)
     *   Belongs to `user` (as reserver, many-to-one)
     *   Belongs to `blood_request` (many-to-one, nullable)
-*   **`transfusion_reactions`**:
-    *   Belongs to `patient` (many-to-one)
-    *   Belongs to `blood_unit` (many-to-one, nullable)
-    *   Belongs to `user` (as reporter, many-to-one, nullable)
-*   **`galleries`**:
-    *   Belongs to `camp` (many-to-one, nullable)
-*   **`news`**:
-    *   Belongs to `user` (as author, many-to-one, nullable)
-
-This detailed database schema provides the foundation for building the Blood Bank Management System in Laravel, accommodating all the features and modules identified in your PDF.

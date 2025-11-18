@@ -217,7 +217,7 @@ CREATE TABLE IF NOT EXISTS `donors` (
 
 -- Dumping data for table blood_management.donors: ~1 rows (approximately)
 INSERT INTO `donors` (`id`, `user_id`, `first_name`, `last_name`, `mobile_number`, `gender`, `date_of_birth`, `address`, `city_id`, `state_id`, `blood_group_id`, `last_donation_date`, `eligible_to_donate_until`, `enrollment_number`, `created_at`, `updated_at`, `status`) VALUES
-	(1, 8, 'Aliza', 'Rayees', '5454854545', 'male', '2009-01-05', 'tandalja road 301', 1, 1, 1, '2025-10-30', '2026-01-22', NULL, '2025-10-11 12:33:41', '2025-10-26 10:31:25', 'active'),
+	(1, 8, 'Aadil', 'Rayees', '5454854545', 'male', '2009-01-05', 'tandalja road 301', 1, 1, 1, '2025-10-30', '2026-01-22', NULL, '2025-10-11 12:33:41', '2025-10-26 10:31:25', 'active'),
 	(3, 16, 'Malik', 'malikbhai', '44854549685', 'male', '2003-02-20', 'besides taif nagar', 1, 1, 4, NULL, NULL, NULL, '2025-11-01 06:56:39', '2025-11-01 06:57:17', 'active');
 
 -- Dumping structure for table blood_management.failed_jobs
