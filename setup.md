@@ -1,11 +1,11 @@
-REQUIRED TO RUN THIS PROJECT
+# REQUIRED TO RUN THIS PROJECT
 
 PHP VERSION : 8.1
 Install Composer (to install php packages)
 Node: 22 version
 
 
-Steps to run project:
+## Steps to run project:
 
 ## Import database
 first import the .SQL file in phpmyadmin ... you can use xampp to install php8.1 and mysql/phpmyadmin
