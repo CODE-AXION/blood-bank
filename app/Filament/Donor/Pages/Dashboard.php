@@ -6,6 +6,7 @@ use Filament\Pages\Page;
 use App\Models\Donor;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\BloodUnit;
 
 class Dashboard extends Page
 {
@@ -39,5 +40,23 @@ class Dashboard extends Page
         }
 
         return $nextEligibleDate->format('F j, Y');
+    }
+
+    public function getTotalDonations(): int
+    {
+        $donor = Donor::where('user_id', Auth::id())->first();
+        return $donor ? $donor->bloodUnits()->count() : 0;
+    }
+
+    public function getTotalAvailableBloodUnits(): int
+    {
+        return BloodUnit::where('status', 'ready_for_issue')->count();
+    }
+
+    public function getAvailableBloodUnits()
+    {
+        return BloodUnit::where('status', 'ready_for_issue')
+            ->with(['bloodGroup', 'donor.user'])
+            ->get();
     }
 }
